@@ -1,14 +1,15 @@
 from flask import Flask, request, jsonify, render_template
 import random
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
-WORDS = ["money", "swing", "ghost", "build", "honey", "place", "lymph", "pluck", "crimp", "wreck", "jumbo"]
+# --- Word Pool ---
+WORDS = [
+    "money", "swing", "ghost", "build", "honey", "place",
+    "lymph", "pluck", "crimp", "wreck", "jumbo"
+]
 
-@app.route('/')
-def home():
-    return render_template("index.html")
-
+# --- Helpers ---
 def has_duplicate_letters(word):
     return len(set(word)) != len(word)
 
@@ -17,6 +18,11 @@ def check_positions(secret, guess):
 
 def check_characters(secret, guess):
     return sum(min(secret.count(c), guess.count(c)) for c in set(guess))
+
+# --- Routes ---
+@app.route('/')
+def home():
+    return render_template("index.html")
 
 @app.route('/check', methods=['POST'])
 def check_word():
@@ -44,5 +50,4 @@ def check_word():
 def get_random_word():
     return jsonify({"word": random.choice(WORDS)})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# --- No __main__ block needed for deployment ---
